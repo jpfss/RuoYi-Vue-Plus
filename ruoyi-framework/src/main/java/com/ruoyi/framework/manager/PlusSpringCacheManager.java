@@ -118,6 +118,10 @@ public class PlusSpringCacheManager implements CacheManager {
 
     @Override
     public Cache getCache(String name) {
+        //拿出第一项优先从内存中获取缓存数据
+        String[] array = StringUtils.delimitedListToStringArray(name, "#");
+        name = array[0];
+
         Cache cache = instanceMap.get(name);
         if (cache != null) {
             return cache;
@@ -131,10 +135,7 @@ public class PlusSpringCacheManager implements CacheManager {
             config = createDefaultConfig();
             configMap.put(name, config);
         }
-
         // 重写 cacheName 支持多参数
-        String[] array = StringUtils.delimitedListToStringArray(name, "#");
-        name = array[0];
         if (array.length > 1) {
             config.setTTL(DurationStyle.detectAndParse(array[1]).toMillis());
         }
